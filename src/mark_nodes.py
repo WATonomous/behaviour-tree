@@ -5,7 +5,7 @@ class at_goal_location(py_trees.behaviour.Behaviour):
         """
         Starts blackboard and connects children nodes.
         """
-        super(Root, self).__init__(name="root", memory=True)
+        super(at_goal_location, self).__init__(name="root", memory=True)
         self.logger.debug("%s.__init__()" % (self.__class__.__name__))
 
         # Blackboard
