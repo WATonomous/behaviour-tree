@@ -11,20 +11,13 @@ class AtGoalLocation(py_trees.behaviour.Behaviour):
 
     def setup(self):
         print("running setup")
-        self.check_current_pos = py_trees.behaviours.CheckBlackboardVariableExists("Check Current Pos", "current_pos")
-        self.check_goal_pos = py_trees.behaviours.CheckBlackboardVariableExists("Check Goal Pos", "goal_pos")
 
     def update(self):
-        if not hasattr(self.blackboard, 'current_pos') or not hasattr(self.blackboard, 'goal_pos'):
-            print("Error: Missing blackboard variables for AtGoalLocation.")
-            return py_trees.common.Status.FAILURE
-
-        if self.blackboard.current_pos == self.blackboard.goal_pos:
+        if self.blackboard.current_pos.position == self.blackboard.goal_pos.position:
             print("Car is at the goal location.")
             return py_trees.common.Status.SUCCESS
         else:
             print("Car is not at the goal location yet.")
-            print(self.blackboard.current_pos, self.blackboard.goal_pos)
             return py_trees.common.Status.FAILURE
 
 # Condition Node: Check if the last node in the route is reached
@@ -35,7 +28,7 @@ class LastNodeInRoute(py_trees.behaviour.Behaviour):
         self.blackboard.register_key(key="route_list", access=py_trees.common.Access.READ)
 
     def update(self):
-        if len(self.blackboard.route_list) == 1:  # Assume last node when only one node is left
+        if len(self.blackboard.route_list) == 0:  # Assume last node when none left 
             print("Last node in route reached.")
             return py_trees.common.Status.SUCCESS
         else:
@@ -52,7 +45,7 @@ class AtNextNode(py_trees.behaviour.Behaviour):
         self.blackboard.register_key(key="next_node", access=py_trees.common.Access.WRITE)
 
     def update(self):
-        if self.blackboard.current_pos == self.blackboard.next_node:
+        if self.blackboard.current_pos.position == self.blackboard.next_node.position:
             print("Car is at the next node.")
             return py_trees.common.Status.SUCCESS
         else:
@@ -69,7 +62,7 @@ class CheckCarOnDesiredRoad(py_trees.behaviour.Behaviour):
         self.blackboard.register_key(key="desired_road", access=py_trees.common.Access.WRITE)
 
     def update(self):
-        if self.blackboard.current_pos == self.blackboard.desired_road:
+        if self.blackboard.current_pos.position == self.blackboard.desired_road.position:
             print("Car is on the desired road.")
             return py_trees.common.Status.SUCCESS
         else:

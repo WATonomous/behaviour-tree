@@ -29,14 +29,16 @@ class MakeCarGoToNextNodeInRouteList(py_trees.composites.Sequence):
 
     def tick(self):
         # Execute each child in sequence by calling the parent tick method
-        result = super(MakeCarGoToNextNodeInRouteList, self).tick()
-        
-        # Check if all child nodes have completed successfully
+        result = super(MakeCarGoToNextNodeInRouteList, self).tick() 
+
+        # After iterating, 'result' should hold the final status of the sequence
         if result == py_trees.common.Status.SUCCESS:
             print("Making the car go to the next node in the route list.")
-        else:
+        elif result == py_trees.common.Status.FAILURE:
             print("Failed to make the car go to the next node in the route list.")
-        
+        else:
+            print("MakeCarGoToNextNodeInRouteList is still running.")
+
         return result
 
 # Action Node: Make the car turn to reach the desired road
@@ -51,7 +53,6 @@ class MakeTurnToReachRoad(py_trees.behaviour.Behaviour):
     def update(self):
         print("Making a turn to reach the desired road.")
         return py_trees.common.Status.SUCCESS
-        # TODO: IMPLEMENT TURN LOGIC BASED ON DTYPE OF NODE
         """
         # assuming dtype of each node has road attribute
         if self.blackboard.current_pos.road == self.blackboard.next_node.road:
@@ -112,12 +113,15 @@ class MarkNodeAsCompleted(py_trees.behaviour.Behaviour):
         self.blackboard.register_key(key="next_node", access=py_trees.common.Access.WRITE)
 
     def update(self):
-        print("Marking the current node as completed.")
-        self.blackboard.current_pos = self.blackboard.next_node
-        temp = self.blackboard.route_list.pop(0)
-        print(temp)
-        self.blackboard.next_node = self.blackboard.route_list[0]
-        print(self.blackboard.route_list)
-        
-        # Logic for marking the node
-        return py_trees.common.Status.SUCCESS
+        if len(self.blackboard.route_list) != 0:
+            print("Marking the current node as completed.")
+            self.blackboard.current_pos = self.blackboard.next_node
+            self.blackboard.route_list.pop(0)
+            # Check if there's a new next node after removing the current one
+            if len(self.blackboard.route_list) > 0:
+                self.blackboard.next_node = self.blackboard.route_list[0]
+            else:
+                self.blackboard.next_node = None  # No more nodes left
+            print(self.blackboard.route_list)
+            return py_trees.common.Status.SUCCESS
+        return py_trees.common.Status.FAILURE

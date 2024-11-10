@@ -51,7 +51,7 @@ class AtNextNode(py_trees.behaviour.Behaviour):
         self.blackboard.register_key(key="next_node", access=py_trees.common.Access.READ)
 
     def update(self):
-        if self.blackboard.current_pos == self.blackboard.next_node:
+        if self.blackboard.current_pos.position == self.blackboard.next_node.position:
             print("Car is at the next node.")
             return py_trees.common.Status.SUCCESS
         else:
